@@ -1,0 +1,37 @@
+﻿services:
+  catalog_db: 
+    image: postgres
+    restart: always
+    container_name: catalog_db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=CatalogDb
+    volumes:
+      - catalog_db_data:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    container_name: pgadmin
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=flywotbl@mail.ru
+      - PGADMIN_DEFAULT_PASSWORD=123456
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+  
+  catalog.api:
+    image: catalog.api
+    build:
+      context: .
+      dockerfile: Services/Catalog/Catalog.API/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - catalog_db
+
+volumes:
+  catalog_db_data:
+  pgadmin_data:
