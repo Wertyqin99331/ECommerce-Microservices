@@ -12,7 +12,7 @@ internal class GetProductByIdEndpoint : ICarterModule
         app.MapGet("/products/{id:guid}", GetProductByIdAsync)
             .WithName("Get product by id")
             .Produces<Product>()
-            .Produces<ApplicationError>(StatusCodes.Status400BadRequest)
+            .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
             .WithSummary("Get a product by id")
             .WithDescription("Get a product by id")
             .WithTags("Products");
@@ -28,6 +28,6 @@ internal class GetProductByIdEndpoint : ICarterModule
             return Results.Ok(result.Value);
         }
 
-        return Results.BadRequest(result.Error);
+        return Results.BadRequest(result.Error.ToProblemDetails());
     }
 }

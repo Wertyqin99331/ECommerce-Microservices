@@ -17,7 +17,7 @@ internal class UpdateProductEndpoint : ICarterModule
         app.MapPut("/products/{id:guid}", UpdateProductAsync)
             .WithName("Update product")
             .Produces(StatusCodes.Status204NoContent)
-            .Produces<ApplicationError>(StatusCodes.Status400BadRequest)
+            .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
             .WithSummary("Update a product")
             .WithDescription("Update a product")
             .WithTags("Products");
@@ -30,6 +30,6 @@ internal class UpdateProductEndpoint : ICarterModule
             request.ImageFile, request.Price);
 
         var result = await sender.Send(command);
-        return result.IsSuccess ? Results.NoContent() : Results.BadRequest(result.Error);
+        return result.IsSuccess ? Results.NoContent() : Results.BadRequest(result.Error.ToProblemDetails());
     }
 }

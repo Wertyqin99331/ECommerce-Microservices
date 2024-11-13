@@ -1,4 +1,3 @@
-using Core.Errors;
 using Microsoft.AspNetCore.Mvc;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
@@ -20,7 +19,7 @@ internal class CreateProductEndpoint : ICarterModule
         app.MapPost("/products", CreateProductAsync)
             .WithName("Create product")
             .Produces<CreateProductResponse>(StatusCodes.Status201Created)
-            .Produces<ApplicationError>(StatusCodes.Status400BadRequest)
+            .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
             .WithSummary("Create a product")
             .WithDescription("Create a product")
             .WithTags("Products");
@@ -37,6 +36,6 @@ internal class CreateProductEndpoint : ICarterModule
             return Results.Created($"/products/{result.Value}", response);
         }
 
-        return Results.BadRequest(result.Error);
+        return Results.BadRequest(result.Error.ToProblemDetails());
     }
 }

@@ -12,7 +12,7 @@ internal class DeleteProductEndpoint : ICarterModule
         app.MapDelete("/products/{id:guid}", DeleteProductAsync)
             .WithName("Delete product")
             .Produces(StatusCodes.Status204NoContent)
-            .Produces<ApplicationError>(StatusCodes.Status400BadRequest)
+            .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
             .WithSummary("Delete a product")
             .WithDescription("Delete a product")
             .WithTags("Products");
@@ -23,6 +23,6 @@ internal class DeleteProductEndpoint : ICarterModule
         var command = new DeleteProductCommand(id);
         
         var result = await sender.Send(command);
-        return result.IsSuccess ? Results.NoContent() : Results.BadRequest(result.Error);
+        return result.IsSuccess ? Results.NoContent() : Results.BadRequest(result.Error.ToProblemDetails());
     }
 }

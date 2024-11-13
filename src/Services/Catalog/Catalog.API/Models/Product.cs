@@ -4,8 +4,7 @@ namespace Catalog.API.Models;
 
 public class Product
 {
-    [JsonInclude]
-    public Guid Id { get; private set; }
+    public Guid Id { get;  set; }
     public string Name { get; set; } = default!;
     public List<string> Categories { get; set; } = default!;
     public string Description { get; set; } = default!;

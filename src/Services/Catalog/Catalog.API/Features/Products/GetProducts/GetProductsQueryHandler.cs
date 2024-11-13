@@ -1,12 +1,12 @@
 using Catalog.API.Models;
-
+using Marten.Pagination;
 using GetProductsResult =
-    CSharpFunctionalExtensions.Result<System.Collections.Generic.IReadOnlyList<Catalog.API.Models.Product>,
+    CSharpFunctionalExtensions.Result<System.Collections.Generic.IEnumerable<Catalog.API.Models.Product>,
         Core.Errors.ApplicationError>;
 
 namespace Catalog.API.Features.Products.GetProducts;
 
-internal record GetProductsQuery(int Page, int CountPerPage) : IQuery<GetProductsResult>;
+internal record GetProductsQuery(int Page = 1, int PageSize = 10) : IQuery<GetProductsResult>;
 
 internal class GetProductsQueryHandler(IDocumentStore store) : IQueryHandler<GetProductsQuery, GetProductsResult>
 {
@@ -15,10 +15,7 @@ internal class GetProductsQueryHandler(IDocumentStore store) : IQueryHandler<Get
         await using var session = store.LightweightSession();
 
         var products = await session.Query<Product>()
-            .Skip((request.Page - 1) * request.CountPerPage)
-            .Take(request.CountPerPage)
-            .ToListAsync(cancellationToken);
-
-        return Result.Success<IReadOnlyList<Product>, ApplicationError>(products);
+            .ToPagedListAsync(request.Page, request.PageSize, cancellationToken);
+        return Result.Success<IEnumerable<Product>, ApplicationError>(products);
     }
 }

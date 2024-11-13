@@ -11,7 +11,7 @@ internal class GetProductsByCategoryEndpoint : ICarterModule
         app.MapGet("/products/{category}", GetProductsByCategoryAsync)
             .WithName("Get products by category")
             .Produces<IEnumerable<Product>>()
-            .Produces<ApplicationError>(StatusCodes.Status400BadRequest)
+            .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
             .WithSummary("Get products by category")
             .WithDescription("Get products by category")
             .WithTags("Products");
@@ -27,6 +27,6 @@ internal class GetProductsByCategoryEndpoint : ICarterModule
             return Results.Ok(result.Value);
         }
 
-        return Results.BadRequest(result.Error);
+        return Results.BadRequest(result.Error.ToProblemDetails());
     }
 }
